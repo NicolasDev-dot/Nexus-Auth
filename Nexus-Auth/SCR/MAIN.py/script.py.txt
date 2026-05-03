@@ -1,0 +1,70 @@
+usuarios = {
+    "nicolas_admin": "5e76f07c91ddbf753b865db40b343639cd0d454f5d43b4b5c290866e3b61b265",
+    "usuario_comum": "2625352ce62f15e2e5db701395a6d7189d79b301367ab68e09fbee81dc676e9b"
+}
+
+cargos_usuarios = {
+    "nicolas_admin": "admin",
+    "usuario_comum": "comum"
+}
+
+permissoes_roles = {
+    "admin": ["abrir_cofre", "deletar_sistema", "visualizar_logs"],
+    "comum": ["visualizar_logs"]
+}
+
+# CORREÇÃO 1: Removi a linha 'verificar_roles' que gerava erro de sintaxe.
+
+import hashlib
+
+# Parte de geração de hashes (que você usou para montar o dicionário)
+senha_nicolas_admin = "mustang2026"
+hash_nicolas = hashlib.sha256(senha_nicolas_admin.encode()).hexdigest()
+
+senha_usuario_comun = "camaro2026"
+hash_comum = hashlib.sha256(senha_usuario_comun.encode()).hexdigest()
+
+def fazer_login():
+    user_input = input("Usuário: ")
+    password_input = input("Senha: ")
+
+    hash_da_entrada = hashlib.sha256(password_input.encode()).hexdigest()
+
+    if user_input in usuarios:
+        if hash_da_entrada == usuarios[user_input]:
+            print(f"✅ Autenticação concluída! Bem-vindo, {user_input}.")
+            return user_input 
+        else:
+            print("❌ Senha incorreta!")
+    else:
+        print("❌ Usuário não encontrado!")
+    
+    return None
+
+# CORREÇÃO 2: Ajustei os nomes para que a função seja dinâmica (aceite qualquer usuário)
+def checar_permissao(usuario, acao):
+    # Em vez de escrever "nicolas_admin", usamos a variável 'usuario'
+    cargo = cargos_usuarios[usuario]
+
+    # Em vez de escrever "admin", usamos a variável 'cargo' que acabamos de achar
+    lista_de_permissoes = permissoes_roles[cargo]
+
+    print(f"O cargo do usuario e: {cargo}")
+    print(f"Os poderes do usuario sao: {lista_de_permissoes}")
+
+    # CORREÇÃO 3: Verificamos se a 'acao' (o que ele quer fazer) está na lista
+    if acao in lista_de_permissoes:
+        return True
+    else:
+        return False
+
+# --- TESTE DO SISTEMA ---
+# Para comparar, veja como conectamos as duas funções:
+usuario_logado = fazer_login()
+
+if usuario_logado:
+    escolha = input("O que deseja fazer? ")
+    if checar_permissao(usuario_logado, escolha):
+        print("🔓 Permissão Concedida!")
+    else:
+        print("🚫 Permissão Negada!")
